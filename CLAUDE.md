@@ -4,6 +4,98 @@
 
 ---
 
+## Repository Overview
+
+**claude-skills** (published as `fullstack-dev-skills@jeffallan`) is a Claude Code plugin providing 66 specialist skills and 9 workflow commands for full-stack developers. Current version: see `version.json`.
+
+### Directory Structure
+
+```
+claude-skills/
+├── skills/               # 66 skill directories (e.g. react-expert/, nestjs-expert/)
+│   └── <skill-name>/
+│       ├── SKILL.md      # Tier-1 entry point (~80-100 lines)
+│       └── references/   # Tier-2 deep-dive files (100-600 lines each)
+├── commands/             # Workflow slash commands
+│   ├── project/          # Phase commands: discovery, planning, execution, retrospectives
+│   ├── common-ground/    # /common-ground context-engineering command
+│   └── workflow-manifest.yaml  # Workflow phase definitions and dependencies
+├── scripts/              # Python tooling
+│   ├── validate-skills.py   # Validates frontmatter, descriptions, references
+│   ├── validate-markdown.py # Validates markdown syntax
+│   ├── update-docs.py       # Updates version counts across all docs
+│   └── migrate-frontmatter.py
+├── docs/                 # Extended documentation
+│   ├── WORKFLOW_COMMANDS.md
+│   ├── ATLASSIAN_MCP_SETUP.md
+│   ├── COMMON_GROUND.md
+│   ├── SUPPORTED_AGENTS.md
+│   ├── local_skill_development.md
+│   └── workflow/         # Phase workflow descriptions
+├── specs/                # Feature specification documents
+├── research/             # Research notes and findings
+├── site/                 # Astro documentation site (jeffallan.github.io/claude-skills)
+├── assets/               # Social preview images
+├── MODELCLAUDE.md        # Template users copy to their own projects' CLAUDE.md
+├── SKILLS_GUIDE.md       # Full skill listing with decision trees
+├── QUICKSTART.md         # Installation guide
+├── CHANGELOG.md          # Version history (Keep a Changelog format)
+├── version.json          # Single source of truth for version + counts
+├── Makefile              # Dev workflow targets
+├── ruff.toml             # Python linting config
+└── pyrightconfig.json    # Python type-checking config
+```
+
+### Key Files
+
+- **`version.json`** — Single source of truth for `version`, `skillCount`, `workflowCount`, `referenceFileCount`. Always update via `python scripts/update-docs.py`.
+- **`MODELCLAUDE.md`** — Template for end users to copy into their own projects. Contains AI behavioral guardrails (skill activation, verification discipline, debugging threshold). Do **not** confuse with this file.
+- **`commands/workflow-manifest.yaml`** — Defines the 5-phase project workflow (intake → discovery → planning → execution → retrospectives) and command dependencies.
+
+---
+
+## Development Setup
+
+### Local Testing
+
+Use Makefile targets to link your working copy to the plugin cache for live testing:
+
+```bash
+make dev-link    # Symlink cache dir → working copy (restart Claude Code after)
+make dev-unlink  # Restore the released cache snapshot
+```
+
+See `docs/local_skill_development.md` for the full symlink workflow.
+
+### Validation Commands
+
+Run these before committing:
+
+```bash
+python scripts/validate-skills.py          # Validate all skills
+python scripts/validate-skills.py --skill react-expert  # Single skill
+python scripts/validate-markdown.py       # Check markdown syntax
+python scripts/update-docs.py --check     # Verify counts are in sync
+```
+
+### Linting
+
+```bash
+make lint        # Check Python (ruff + pyright) and site (prettier)
+make format      # Auto-fix Python and site formatting
+make validate    # validate-skills + update-docs --check
+make test        # Run Makefile self-tests
+```
+
+### Commit Message Format
+
+- `Add:` — new features, skills, commands
+- `Fix:` — bug fixes
+- `Update:` — improvements to existing content
+- `Docs:` — documentation-only changes
+
+---
+
 ## Skill Authorship Standards
 
 Skills follow the [Agent Skills specification](https://agentskills.io/specification). This section covers project-specific conventions that go beyond the base spec.
