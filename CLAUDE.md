@@ -96,6 +96,57 @@ make test        # Run Makefile self-tests
 
 ---
 
+## GitHub & CI/CD
+
+### Branch Strategy
+
+- **`main`** — stable, released code. CI runs on every push and PR.
+- **`dev`** — integration branch for work-in-progress. CI runs here too.
+- Feature branches: `feature/your-feature-name` or `fix/your-bug-fix`.
+
+### CI Workflows (`.github/workflows/`)
+
+| File | Trigger | What it does |
+|------|---------|--------------|
+| `ci.yml` | push/PR → `main`, `dev` | Runs `validate.yml` as a reusable job |
+| `validate.yml` | Called by CI & Release | Validates skills, markdown, doc counts, lints Python & Astro |
+| `release.yml` | Push of `v*` tag or manual dispatch | Runs validate, builds docs site, deploys to GitHub Pages, creates GitHub Release |
+
+**Validate job steps:**
+1. `python scripts/validate-skills.py` — YAML frontmatter, description format, reference links
+2. `python scripts/validate-markdown.py --check` — table syntax, unclosed code blocks
+3. `python scripts/update-docs.py --check` — skill/reference counts in sync across all docs
+4. `pre-commit` hooks — ruff lint/format on Python scripts
+5. Prettier check on `site/src/**/*.astro`
+
+**Release job steps (tag `v*`):**
+1. Extracts release notes from `CHANGELOG.md` for the tagged version
+2. Builds the Astro documentation site (`site/`)
+3. Deploys to GitHub Pages
+4. Creates a GitHub Release with the extracted changelog notes
+
+### Issue Templates (`.github/ISSUE_TEMPLATE/`)
+
+| Template | Use for |
+|----------|---------|
+| `new-skill.yml` | Proposing a new skill — collects name, domain, trigger conditions, keywords, overlapping skills, reference topics |
+| `claude-issue.yml` | Claude-filed issues — collects issue type, overview, implementation plan, acceptance criteria |
+
+### PR Checklist (implied by CI)
+
+Before opening a PR, ensure locally:
+
+```bash
+python scripts/validate-skills.py   # must exit 0
+python scripts/validate-markdown.py # must exit 0
+python scripts/update-docs.py --check  # counts must match
+make lint                           # ruff + pyright + prettier
+```
+
+CI will block merge if any of these fail.
+
+---
+
 ## Skill Authorship Standards
 
 Skills follow the [Agent Skills specification](https://agentskills.io/specification). This section covers project-specific conventions that go beyond the base spec.
