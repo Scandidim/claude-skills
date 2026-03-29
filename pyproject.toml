@@ -1,0 +1,15 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["scripts"]
+omit = ["scripts/migrate-frontmatter.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 60

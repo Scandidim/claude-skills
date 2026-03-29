@@ -1,4 +1,4 @@
-.PHONY: dev-link dev-unlink validate test site-dev site-build lint format lint-fix
+.PHONY: dev-link dev-unlink validate test test-unit site-dev site-build lint format lint-fix
 
 PLUGIN_NAME := fullstack-dev-skills
 VERSION := $(shell python -c "import json; print(json.load(open('version.json'))['version'])")
@@ -47,6 +47,12 @@ validate:
 
 test:
 	bash scripts/test-makefile.sh
+
+test-unit:
+	pytest tests/ -v
+
+test-unit-cov:
+	pytest tests/ -v --cov=scripts --cov-report=term-missing
 
 site-dev:
 	cd site && npm run dev

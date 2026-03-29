@@ -18,7 +18,10 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install pyyaml
+        run: pip install pyyaml pytest pytest-cov
+
+      - name: Run unit tests
+        run: pytest tests/ -v --cov=scripts --cov-report=term-missing
 
       - name: Validate skills
         run: python scripts/validate-skills.py
